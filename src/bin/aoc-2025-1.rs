@@ -1,6 +1,6 @@
 /// 2025 day 1
 fn main() {
-    let input = parse(include_str!("../input/2025-1.txt"));
+    let input = parse(include_str!("../../input/2025-1.txt"));
     let answer_1 = solve_1(input.clone());
     println!("{}", answer_1.value);
 
