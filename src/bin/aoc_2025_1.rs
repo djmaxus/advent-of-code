@@ -2,59 +2,65 @@
 
 advent_of_code::aoc_template!(
     "../../input/2025-1.txt",
-    r#"3   4
-4   3
-2   5
-1   3
-3   9
-3   3"#,
-    11,
-    (Vec<u32>, Vec<u32>),
-    (vec![4, 2, 1, 3, 3], vec![3, 5, 3, 9, 3]),
+    r#"L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82"#,
+    3,
+    Vec<i64>,
+    vec![-68, -30, 48, -5, 60, -55, -1, -99, 14, -82],
     input,
     {
-        input.lines().fold(
-            Input {
-                value: (Vec::new(), Vec::new()),
-            },
-            |mut acc, line| {
-                let mut parts = line.split_whitespace();
-                let a: u32 = parts.next().unwrap().parse().unwrap();
-                let b: u32 = parts.next().unwrap().parse().unwrap();
-                acc.value.0.push(a);
-                acc.value.1.push(b);
-                acc
-            },
-        )
+        let value = input
+            .lines()
+            .map(|line| {
+                let dir: char = line.get(0..1).unwrap().parse().unwrap();
+                let dir: i64 = match dir {
+                    'L' => -1,
+                    'R' => 1,
+                    _ => panic!(),
+                };
+                let num: i64 = line.get(1..).unwrap().parse().unwrap();
+                num * dir
+            })
+            .collect();
+        Input { value }
     },
     {
-        let input_sorted = {
-            let mut input = input;
-            input.value.0.sort();
-            input.value.1.sort();
-            input
-        };
-        let mut value: u64 = 0;
-        for (left, right) in input_sorted.value.0.into_iter().zip(input_sorted.value.1) {
-            value += u64::from(left.abs_diff(right));
-        }
-        Answer { value }
+        let mut num_zeros = 0;
+        input.value.iter().fold(50, |pos, rotation| {
+            let new_pos = (pos + rotation) % 100;
+            if new_pos == 0 {
+                num_zeros += 1;
+            }
+            new_pos
+        });
+        Answer { value: num_zeros }
     },
-    31,
+    6,
     {
-        let (left, right) = input.value;
-        let mut n_left_in_right: Vec<usize> = vec![];
-        for &id in left.iter() {
-            let count = right.iter().filter(|&&item_right| item_right == id).count();
-            n_left_in_right.push(count);
-        }
-
-        let value = left
-            .into_iter()
-            .zip(n_left_in_right)
-            .fold(0u64, |acc, (left, n_in_right)| {
-                acc + u64::from(left) * u64::try_from(n_in_right).unwrap()
-            });
-        Answer { value }
+        let mut num_zeros: u64 = 0;
+        input.value.iter().fold(50, |pos: i64, &rotation| {
+            let num_full_rot: u64 = rotation.unsigned_abs().div(100);
+            num_zeros += num_full_rot;
+            let rotation_rem = rotation % 100;
+            let new_pos = (pos + rotation_rem).rem_euclid(100);
+            match rotation_rem {
+                0 => (/* no more rotations */),
+                _ if pos == 0 => (/* started at zero, so no more passages */),
+                _ if new_pos == 0 => num_zeros += 1,
+                i64::MIN..0 if new_pos > pos => num_zeros += 1,
+                1..=i64::MAX if new_pos < pos => num_zeros += 1,
+                _ => (/* did not cross zero*/),
+            }
+            new_pos
+        });
+        Answer { value: num_zeros }
     }
 );

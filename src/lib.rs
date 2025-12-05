@@ -43,7 +43,7 @@ macro_rules! aoc_template {
             $solve_2_impl
         }
 
-        #[cfg(test)]
+        #[test]
         pub fn test() {
             const INPUT: &str = $test_input;
 
