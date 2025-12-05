@@ -1,5 +1,60 @@
 // 2025 day 1
 
+use std::path::PathBuf;
+
+struct Problem {
+    test_parse: Option<TokenStream>,
+    test_1: Option<TokenStream>,
+    test_2: Option<TokenStream>,
+    solve_1: Option<TokenStream>,
+    solve_2: Option<TokenStream>,
+}
+
+impl Problem {
+    fn builder<Parsed: Default>() -> ProblemBuilder<Parsed> {
+        ProblemBuilder::default()
+    }
+}
+use proc_macro2::TokenStream;
+
+#[derive(Default)]
+struct ProblemBuilder<Parsed: Default> {
+    test_input: Option<String>,
+    input_path: Option<PathBuf>,
+    test_ans_1: Option<u64>,
+    test_ans_2: Option<u64>,
+    test_input_parsed: Option<Parsed>,
+    solver_1: Option<TokenStream>,
+    solver_2: Option<TokenStream>,
+}
+
+impl<Parsed: Default> ProblemBuilder<Parsed> {
+    fn test_input(mut self, test_input: &str) -> Self {
+        self.test_input = Some(test_input.into());
+        self
+    }
+    fn try_build(self) -> Option<Problem> {
+        None
+    }
+}
+
+fn test() -> Option<Problem> {
+    Problem::builder::<()>()
+        .test_input(
+            r#"L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82"#,
+        )
+        .try_build()
+}
+
 advent_of_code::aoc_template!(
     "../../input/2025-1.txt",
     r#"L68
