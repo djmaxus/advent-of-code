@@ -47,7 +47,7 @@ L82"#,
     {
         let mut num_zeros: u64 = 0;
         input.value.iter().fold(50, |pos: i64, &rotation| {
-            let num_full_rot: u64 = rotation.unsigned_abs().div(100);
+            let num_full_rot: u64 = rotation.unsigned_abs() / 100;
             num_zeros += num_full_rot;
             let rotation_rem = rotation % 100;
             let new_pos = (pos + rotation_rem).rem_euclid(100);
