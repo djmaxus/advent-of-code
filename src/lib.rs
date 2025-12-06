@@ -173,6 +173,7 @@ pub enum Answer {
     NoData,
     FailedParser,
     FailedSolve,
+    TestPassed,
     Ok(u64),
 }
 
@@ -182,6 +183,7 @@ impl Display for Answer {
             Answer::NoData => "Not enough data".to_owned(),
             Answer::FailedParser => "Parser test failed".to_owned(),
             Answer::FailedSolve => "Solver test failed".to_owned(),
+            Answer::TestPassed => "Test passed".to_owned(),
             Answer::Ok(ans) => ans.to_string(),
         };
         write!(f, "{description}")
@@ -220,12 +222,14 @@ impl<Parsed: Default + PartialEq> ProblemBuilder<Parsed> {
         let mut ans_1 = Answer::NoData;
         match eq_1 {
             Some(eq_1) if !eq_1 => ans_1 = Answer::FailedSolve,
+            Some(eq_1) if eq_1 => ans_1 = Answer::TestPassed,
             _ => (),
         };
 
         let mut ans_2 = Answer::NoData;
         match eq_2 {
             Some(eq_2) if !eq_2 => ans_2 = Answer::FailedSolve,
+            Some(eq_2) if eq_2 => ans_2 = Answer::TestPassed,
             _ => (),
         };
 
@@ -233,12 +237,14 @@ impl<Parsed: Default + PartialEq> ProblemBuilder<Parsed> {
 
         ans_1 = match (sol_1, ans_1) {
             (_, Answer::FailedSolve) => Answer::FailedSolve,
+            (None, Answer::TestPassed) => Answer::TestPassed,
             (None, _) => Answer::NoData,
             (Some(ans), _) => Answer::Ok(ans),
         };
 
         ans_2 = match (sol_2, ans_2) {
             (_, Answer::FailedSolve) => Answer::FailedSolve,
+            (None, Answer::TestPassed) => Answer::TestPassed,
             (None, _) => Answer::NoData,
             (Some(ans), _) => Answer::Ok(ans),
         };
