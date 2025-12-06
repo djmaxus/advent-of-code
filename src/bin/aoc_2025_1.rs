@@ -1,100 +1,8 @@
 // 2025 day 1
 
-impl<Parsed: Default + PartialEq> ProblemBuilder<Parsed> {
-    pub fn process(self) {
-        self.try_solve_1();
-        self.try_solve_2();
-    }
+use advent_of_code::ProblemBuilder;
 
-    fn try_test_parser(&self) -> Option<bool> {
-        let Some(parser) = self.parser.as_ref() else {
-            println!("Parser is not provided");
-            return None;
-        };
-        let Some(test_input) = self.test_input.as_deref() else {
-            println!("No test input is provided");
-            return None;
-        };
-        let Some(test_input_parsed) = self.test_input_parsed.as_ref() else {
-            println!("No parsed test input is provided");
-            return None;
-        };
-        Some(&parser(&test_input) == test_input_parsed)
-    }
-
-    fn try_test_1(&self) -> Option<bool> {
-        self.try_test_parser();
-        println!("Test case 1 is not provided");
-        None
-    }
-
-    fn try_test_2(&self) -> Option<bool> {
-        println!("Test case 2 is not provided");
-        None
-    }
-
-    fn try_solve_1(&self) {
-        println!("Solver 1 is not provided");
-        match self.try_test_1() {
-            None | Some(true) => todo!("attempt solve"),
-            Some(false) => println!("Skip part 1"),
-        };
-    }
-
-    fn try_solve_2(&self) {
-        println!("Solver 1 is not provided");
-        match self.try_test_2() {
-            None | Some(true) => todo!("attempt solve"),
-            Some(false) => println!("Skip part 2"),
-        };
-    }
-}
-
-#[derive(Default)]
-struct ProblemBuilder<Parsed: Default + PartialEq> {
-    test_input: Option<String>,
-    input: Option<String>,
-    test_ans_1: Option<u64>,
-    test_ans_2: Option<u64>,
-    test_input_parsed: Option<Parsed>,
-    parser: Option<Box<dyn Fn(&str) -> Parsed>>,
-    solver_1: Option<Box<dyn Fn(&Parsed) -> u64>>,
-    solver_2: Option<Box<dyn Fn(&Parsed) -> u64>>,
-}
-
-impl<Parsed: Default + PartialEq> ProblemBuilder<Parsed> {
-    fn test_input(mut self, test_input: &str) -> Self {
-        self.test_input = Some(test_input.into());
-        self
-    }
-
-    fn test_ans_1(mut self, test_ans_1: u64) -> Self {
-        self.test_ans_1 = Some(test_ans_1);
-        self
-    }
-
-    fn test_ans_2(mut self, test_ans_2: u64) -> Self {
-        self.test_ans_2 = Some(test_ans_2);
-        self
-    }
-
-    fn test_input_parsed(mut self, test_input_parsed: Parsed) -> Self {
-        self.test_input_parsed = Some(test_input_parsed);
-        self
-    }
-
-    fn parser(mut self, parser: Box<dyn Fn(&str) -> Parsed>) -> Self {
-        self.parser = Some(parser);
-        self
-    }
-
-    fn input(mut self, input: &str) -> Self {
-        self.input = Some(input.into());
-        self
-    }
-}
-
-fn main_impl() {
+fn main() {
     let input = include_str!("../../input/2025-1.txt").to_string();
     let builder = ProblemBuilder::<Vec<i64>>::default()
         .test_input(
@@ -131,8 +39,41 @@ L82"#,
     }
 
     let builder = builder.parser(Box::new(parser));
+    let builder = builder.solver_1(Box::new(|input| {
+        let mut num_zeros = 0;
+        input.iter().fold(50, |pos, rotation| {
+            let new_pos = (pos + rotation) % 100;
+            if new_pos == 0 {
+                num_zeros += 1;
+            }
+            new_pos
+        });
+        num_zeros
+    }));
 
-    builder.process();
+    let builder = builder.solver_2(Box::new(|input| {
+        let mut num_zeros: u64 = 0;
+        input.iter().fold(50, |pos: i64, &rotation| {
+            let num_full_rot: u64 = rotation.unsigned_abs() / 100;
+            num_zeros += num_full_rot;
+            let rotation_rem = rotation % 100;
+            let new_pos = (pos + rotation_rem).rem_euclid(100);
+            match rotation_rem {
+                0 => (/* no more rotations */),
+                _ if pos == 0 => (/* started at zero, so no more passages */),
+                _ if new_pos == 0 => num_zeros += 1,
+                i64::MIN..0 if new_pos > pos => num_zeros += 1,
+                1..=i64::MAX if new_pos < pos => num_zeros += 1,
+                _ => (/* did not cross zero*/),
+            }
+            new_pos
+        });
+        num_zeros
+    }));
+
+    let (ans_1, ans_2) = builder.solve();
+    println!("part 1: {ans_1}");
+    println!("part 2: {ans_2}");
 }
 
 advent_of_code::aoc_template!(

@@ -2,6 +2,3 @@
 name = "advent-of-code"
 version = "0.1.0"
 edition = "2024"
-
-[dependencies]
-proc-macro2 = "1.0.103"
