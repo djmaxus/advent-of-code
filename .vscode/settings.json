@@ -1,5 +1,6 @@
 {
     "github.copilot.enable": {
         "rust": false
-    }
+    },
+    "files.insertFinalNewline": false
 }
