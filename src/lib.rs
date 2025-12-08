@@ -282,3 +282,10 @@ impl<Parsed: Default + PartialEq> ProblemBuilder<Parsed> {
         (parse_eq, sol_1_eq, sol_2_eq)
     }
 }
+
+impl<Parsed: Default + PartialEq> Display for ProblemBuilder<Parsed> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let sol = self.solve();
+        write!(f, "Part 1: {}\n Part 2: {}", sol.0, sol.1)
+    }
+}
