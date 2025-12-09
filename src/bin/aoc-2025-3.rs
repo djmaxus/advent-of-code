@@ -21,12 +21,7 @@ fn parser(input: &str) -> Parsed {
 }
 
 fn calc_joltage(bank: &Bank) -> u64 {
-    largest_number(bank, 2)
-        .into_iter()
-        .rev()
-        .enumerate()
-        .map(|(idx, digit)| digit * 10_u64.pow(idx.try_into().unwrap()))
-        .sum()
+    largest_number_built(bank, 2)
 }
 
 fn total_output_joltage(parsed: &Parsed) -> u64 {
@@ -37,7 +32,11 @@ fn total_output_joltage_12(parsed: &Parsed) -> u64 {
 }
 
 fn calc_joltage_12(bank: &[u64]) -> u64 {
-    largest_number(bank, 12)
+    largest_number_built(bank, 12)
+}
+
+fn largest_number_built(seq: &[u64], num_digits: usize) -> u64 {
+    largest_number(seq, num_digits)
         .into_iter()
         .rev()
         .enumerate()
