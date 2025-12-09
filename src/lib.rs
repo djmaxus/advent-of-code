@@ -63,55 +63,6 @@ macro_rules! aoc_template {
     };
 }
 
-#[macro_export]
-macro_rules! aoc_template_1 {
-    (
-        $input_file:literal,
-        $test_input:literal,
-        $test_out_1:literal,
-        $parsed_input:ty,
-        $test_parse:expr,
-        $input_name:ident,
-        $parser_impl:block,
-        $solve_1_impl:block,
-    ) => {
-        advent_of_code::aoc_template!(
-            $input_file,
-            $test_input,
-            $test_out_1,
-            $parsed_input,
-            $test_parse,
-            $input_name,
-            $parser_impl,
-            $solve_1_impl,
-            0,
-            { Answer { value: 0 } }
-        );
-    };
-}
-
-#[macro_export]
-macro_rules! aoc_template_empty {
-    (
-        $input_file:literal,
-        $test_input:literal,
-        $test_out_1:literal,
-    ) => {
-        advent_of_code::aoc_template!(
-            $input_file,
-            $test_input,
-            $test_out_1,
-            (),
-            (),
-            input,
-            { Input { value: () } },
-            { Answer { value: 0 } },
-            0,
-            { Answer { value: 0 } }
-        );
-    };
-}
-
 #[derive(Default)]
 pub struct ProblemBuilder<Parsed: Default> {
     test_input: Option<String>,
